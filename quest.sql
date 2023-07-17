@@ -76,3 +76,34 @@ LEFT JOIN (
 LEFT JOIN books AS b USING(book_id)
 GROUP BY r.reader_fio
 ORDER BY 2 DESC NULLS LAST;
+
+-- Напишите sql запрос, который определяет, терял ли определенный читатель книги.
+SELECT lb.book_id, b.book_name, lb.lending_date
+FROM lending_of_books AS lb
+LEFT JOIN lost_books AS lb_lost ON lb.reader_id = lb_lost.reader_id AND lb.book_id = lb_lost.book_id
+JOIN books AS b ON lb.book_id = b.book_id
+WHERE lb.reader_id = 2
+AND lb_lost.reader_id IS NOT NULL;
+
+-- При потере книг количество доступных книг фонда меняется.
+-- Напишите sql запрос на обновление соответствующей информации.
+SELECT lb.book_id, b.book_name, lb.lending_date
+FROM lending_of_books AS lb
+LEFT JOIN lost_books AS lb_lost ON lb.reader_id = lb_lost.reader_id AND lb.book_id = lb_lost.book_id
+JOIN books AS b ON lb.book_id = b.book_id
+WHERE lb.reader_id = 2
+AND lb_lost.reader_id IS NOT NULL;
+
+-- Определить сумму потерянных книг по каждому кварталу в течение года.
+SELECT lb_2.quarter_lose AS "Квартал",
+    COUNT(lb_2.book_id) AS "Количество потерянных книг",
+    SUM(lb_2.book_priсe) AS "Сумма потерянных книг"
+FROM (
+    SELECT lb.book_id, b.book_priсe,
+    EXTRACT(QUARTER FROM lb.loss_date) AS quarter_lose
+    FROM lost_books AS lb
+    JOIN books AS b ON lb.book_id = b.book_id
+    WHERE lb.loss_date > (CURRENT_DATE - INTERVAL '1 year')
+) AS lb_2
+GROUP BY lb_2.quarter_lose
+ORDER BY lb_2.quarter_lose;

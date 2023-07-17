@@ -55,3 +55,9 @@ CREATE TABLE IF NOT EXISTS public.return_of_books (
     lending_id BIGINT REFERENCES public.lending_of_books (lending_of_book_id) ON DELETE CASCADE,
     return_date DATE NOT NULL DEFAULT CURRENT_DATE
 );
+CREATE TABLE IF NOT EXISTS public.lost_books (
+    lost_book_id serial PRIMARY KEY,
+    book_id BIGINT REFERENCES public.books (book_id) ON DELETE CASCADE,
+    loss_date DATE NOT NULL,
+    reader_id BIGINT REFERENCES public.readers (reader_id) ON DELETE CASCADE
+);
