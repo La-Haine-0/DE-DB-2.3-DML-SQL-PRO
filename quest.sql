@@ -87,12 +87,11 @@ AND lb_lost.reader_id IS NOT NULL;
 
 -- При потере книг количество доступных книг фонда меняется.
 -- Напишите sql запрос на обновление соответствующей информации.
-SELECT lb.book_id, b.book_name, lb.lending_date
-FROM lending_of_books AS lb
-LEFT JOIN lost_books AS lb_lost ON lb.reader_id = lb_lost.reader_id AND lb.book_id = lb_lost.book_id
-JOIN books AS b ON lb.book_id = b.book_id
-WHERE lb.reader_id = 2
-AND lb_lost.reader_id IS NOT NULL;
+UPDATE public.books AS b
+SET сount_copies_of_book = сount_copies_of_book - 1
+FROM public.lost_books AS lb
+WHERE b.book_id = lb.book_id
+AND lb.reader_id = 2;
 
 -- Определить сумму потерянных книг по каждому кварталу в течение года.
 SELECT lb_2.quarter_lose AS "Квартал",
